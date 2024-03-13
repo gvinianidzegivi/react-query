@@ -1,13 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IUser, apiGetUsers, apiPostUser } from "./api/users";
 import { v4 as uid } from "uuid";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
+import { Toaster } from "@/components/ui/toaster";
 
 const App = () => {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: () => apiGetUsers(),
+    initialData: [],
   });
 
   const { mutate, isError, isSuccess, isPending } = useMutation({
@@ -20,17 +26,26 @@ const App = () => {
       ]),
   });
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        description: "Your message has been sent.",
+      });
+    }
+  }, [isSuccess, toast]);
+
   if (isLoading) return <h2>Loading...!</h2>;
   if (isPending) return <h2>wait, user is adding...</h2>;
   if (error || isError) return <h2>Error Ocurred!</h2>;
-  if (isSuccess) console.log("user added successfully");
 
   return (
     <>
-      {data && data?.map(({ id, name }: IUser) => <h1 key={id}>{name}</h1>)}
-      <button onClick={() => mutate({ id: uid(), name: "John Doe" })}>
-        add User
-      </button>
+      {data.map(({ id, name }: IUser) => (
+        <h1 key={id}>{name}</h1>
+      ))}
+      <Button onClick={() => mutate({ id: uid(), name: "John Doe" })}>
+        Add User
+      </Button>
     </>
   );
 };
