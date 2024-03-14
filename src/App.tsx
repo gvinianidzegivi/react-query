@@ -4,7 +4,6 @@ import { v4 as uid } from "uuid";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
 
 const App = () => {
   const { toast } = useToast();
@@ -29,7 +28,8 @@ const App = () => {
   useEffect(() => {
     if (isSuccess) {
       toast({
-        description: "Your message has been sent.",
+        title: "User Added Successfully",
+        variant: "success",
       });
     }
   }, [isSuccess, toast]);
